@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>119 긴급 요령</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #d32f2f;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .button.call { background-color: #d32f2f; color: #fff; }
+        .button.call:hover { background-color: #b71c1c; }
+        .button.location { background-color: #0288d1; color: #fff; }
+        .button.location:hover { background-color: #01579b; }
+        .button.tips { background-color: #388e3c; color: #fff; }
+        .button.tips:hover { background-color: #1b5e20; }
+        .button.info { background-color: #6d4c41; color: #fff; }
+        .button.info:hover { background-color: #3e2723; }
+        .button.video { background-color: #ff8f00; color: #fff; }
+        .button.video:hover { background-color: #e65100; }
+        .info, .location {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #d32f2f;
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 90%;
+            text-align: center;
+        }
+        .modal h2 { color: #d32f2f; margin-top: 0; }
+        .modal p { margin: 15px 0; }
+        .modal .close {
+            background-color: #d32f2f;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal .close:hover { background-color: #b71c1c; }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>119 긴급 요령</h1>
+    </header>
+    <div class="container">
+        <button class="button call" onclick="call119()">📞 119 전화하기</button>
+        <button class="button location" onclick="toggleLocation()">📍 현재 위치 확인</button>
+        <div id="location-box" class="location" style="display: none;">
+            <p>현재 위치를 가져오는 중...</p>
+        </div>
+        <button class="button tips" onclick="toggleEmergencyTips()">🚑 응급처치 요령 보기</button>
+        <div id="tips-box" class="info" style="display: none;">
+            <h2>응급처치 요령</h2>
+            <button class="button tips" onclick="toggleSubInfo('burn')">🔥 화상</button>
+            <div id="burn-info" class="sub-info" style="display: none;">
+                <h3>화상 요령</h3>
+                <p>1. 찬물로 10분 이상 화상 부위를 식히세요.</p>
+                <p>2. 물집을 터트리지 마세요.</p>
+                <p>3. 깨끗한 거즈로 부위를 감싸세요.</p>
+                <button class="button video" onclick="viewVideo('https://www.youtube.com/watch?v=XY_Imovh4VA')">📺 영상 참고</button>
+            </div>
+            <button class="button tips" onclick="toggleSubInfo('choking')">🤲 기도 폐쇄</button>
+            <div id="choking-info" class="sub-info" style="display: none;">
+                <h3>기도 폐쇄 요령</h3>
+                <p>1. 환자의 등 중앙을 5번 강하게 두드리세요.</p>
+                <p>2. 하임리히법을 통해 복부를 압박하세요.</p>
+                <p>3. 심한 경우 즉시 119에 신고하세요.</p>
+                <button class="button video" onclick="viewVideo('https://www.youtube.com/watch?v=AZME_cpFkC4')">📺 영상 참고</button>
+            </div>
+            <button class="button tips" onclick="toggleSubInfo('cpr')">❤️ 심폐소생술 (CPR)</button>
+            <div id="cpr-info" class="sub-info" style="display: none;">
+                <h3>심폐소생술 요령</h3>
+                <p>1. 가슴 압박: 가슴 중앙을 5cm 깊이로 100~120회/분 속도로 눌러주세요.</p>
+                <p>2. 인공호흡: 고개를 뒤로 젖히고 입 대 입으로 공기를 불어넣으세요.</p>
+                <p>3. 30:2 비율로 압박과 인공호흡을 반복하세요.</p>
+                <button class="button video" onclick="viewVideo(https://www.youtube.com/watch?v=2ZIdOeTZRMk')">📺 영상 참고</button>
+            </div>
+        </div>
+    </div>
+</div>
+<button class="button info" onclick="toggleModal()">ℹ️ 정보 보기</button>
+</div>
+    <footer>
+        © 2024 119 긴급 요령
+    </footer>
+    <div id="overlay"></div>
+    <div id="info-modal" class="modal">
+        <h2>119 긴급 요령 정보</h2>
+        <p>이 웹사이트는 긴급 상황에서 필요한 119 연락처, 응급처치 요령, 위치 공유 등의 기능을 제공합니다</p>
+        <p>도움 : ChatGPT</p>
+        <p>송산고 기가</p>
+        <button class="close" onclick="toggleModal()">닫기</button>
+    </div>
+    <script>
+        // 119 전화하기
+        function call119() {
+            location.href = "tel:119";
+        }
+
+        // 위치 확인 토글
+        let isLocationVisible = false;
+        function toggleLocation() {
+            const locationBox = document.getElementById("location-box");
+            isLocationVisible = !isLocationVisible;
+            locationBox.style.display = isLocationVisible ? "block" : "none";
+
+            if (isLocationVisible) {
+                locationBox.innerHTML = "<p>현재 위치를 가져오는 중...</p>";
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const address = data.display_name || "주소를 찾을 수 없습니다.";
+                                    locationBox.innerHTML = `<p>현재 주소:</p><p>${address}</p>`;
+                                })
+                                .catch(() => {
+                                    locationBox.innerHTML = "<p>주소를 가져올 수 없습니다.</p>";
+                                });
+                        },
+                        () => {
+                            locationBox.innerHTML = "<p>위치를 가져올 수 없습니다. 위치 서비스를 활성화하세요.</p>";
+                        }
+                    );
+                } else {
+                    locationBox.innerHTML = "<p>이 브라우저에서는 위치 서비스를 지원하지 않습니다.</p>";
+                }
+            }
+        }
+
+       
+        function toggleEmergencyTips() {
+            const tipsBox = document.getElementById("tips-box");
+            tipsBox.style.display = tipsBox.style.display === "none" ? "block" : "none";
+        }
+
+       
+        function toggleSubInfo(id) {
+            const subInfo = document.getElementById(`${id}-info`);
+            subInfo.style.display = subInfo.style.display === "none" ? "block" : "none";
+        }
+
+     
+        function toggleModal() {
+            const modal = document.getElementById("info-modal");
+            const overlay = document.getElementById("overlay");
+            const isModalVisible = modal.style.display === "block";
+
+            modal.style.display = isModalVisible ? "none" : "block";
+            overlay.style.display = isModalVisible ? "none" : "block";
+        }
+
+        function viewVideo(url) {
+            window.open(url, "_blank");
+        }
+    </script>
+</body>
+</html>
